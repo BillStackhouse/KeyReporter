@@ -7,4 +7,4 @@ Example
          .registerJFrame(frame)
          .reportTable(new Dimension(1000, 800);
 
-<img src="doc-files/KeyReporter.jpg" width="750">
+<img src="doc-files/KeyReporter.jpg" width="75%">
