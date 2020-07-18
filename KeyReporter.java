@@ -49,8 +49,7 @@ import javax.swing.table.TableModel;
  * <p>
  * <b>Screenshot</b>
  * <p>
- * <img src="{@docRoot}/com/billsdesk/github/keyreporter/doc-files/KeyReporter.jpg" width="750" alt=
- * "alternative directory">
+ * <img src="doc-files/KeyReporter.jpg" width="100%" alt="KeyReporter.jpg">
  * </p>
  * <p>
  * <b>Contact Information</b>
