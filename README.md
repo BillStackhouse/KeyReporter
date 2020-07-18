@@ -7,4 +7,4 @@ Example
          .registerJFrame(frame)
          .reportTable(new Dimension(1000, 800);
 
-![[Screenshot](KeyReporter.jpg)
+![[Screenshot](doc-files/KeyReporter.jpg)
