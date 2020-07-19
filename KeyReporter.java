@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import javax.swing.InputMap;
@@ -51,6 +52,10 @@ import javax.swing.table.TableModel;
  * <p>
  * <img src="doc-files/KeyReporter.jpg" width="100%" alt="KeyReporter.jpg">
  * </p>
+ * <b>Build Requirements</b>
+ * </p>
+ * Java 11
+ * </p>
  * <p>
  * <b>Contact Information</b>
  * </p>
@@ -58,16 +63,56 @@ import javax.swing.table.TableModel;
  * email: billsdesk@gmail.com<br>
  *
  * @author Bill
- * @version $Rev: 8224 $ $Date: 2020-07-16 14:23:05 -0700 (Thu, 16 Jul 2020) $
+ * @version $Rev: 8227 $ $Date: 2020-07-18 09:41:45 -0700 (Sat, 18 Jul 2020) $
  */
 public class KeyReporter {
 
-    private static List<String> sColumnTitles = Arrays.asList("Class",
-                                                              "Dup",
-                                                              "Key Stroke",
-                                                              "Action",
-                                                              "Focus Type");
-    private static KeyReporter  sInstance     = new KeyReporter();
+    private static Properties properties = new Properties();
+    static {
+        // if file not found then strings will have default values
+        setProperties(KeyReporter.class, "messages.properties");
+    }
+
+    /**
+     * Allow User to specify a different properties files for the external strings. Must be called
+     * prior to creating the dialog.
+     *
+     * @param aClass
+     *            Class for the anchor of the location
+     * @param name
+     *            name of the properties, may include relative path
+     */
+    public static void setProperties(final Class< ? > aClass, final String name) {
+        try {
+            properties.load(aClass.getResourceAsStream(name));
+        } catch (final NullPointerException | IOException error) {
+            // not found, leave empty and use default values.
+        }
+    }
+
+    private static final String STR_ACTION     =                               //
+            properties.getProperty("KeyReporter.action", "Action");
+    private static final String STR_ANCESTOR   =                               //
+            properties.getProperty("KeyReporter.ancestor", "Ancestor");
+    private static final String STR_CLASS      =                               //
+            properties.getProperty("KeyReporter.class", "Class");
+    private static final String STR_DUP        =                               //
+            properties.getProperty("KeyReporter.dup", "Dup");
+    private static final String STR_FOCUS_TYPE =                               //
+            properties.getProperty("KeyReporter.focus_type", "Focus Type");
+    private static final String STR_FOCUSED    =                               //
+            properties.getProperty("KeyReporter.focused", "Focused");
+    private static final String STR_IN_FOCUS   =                               //
+            properties.getProperty("KeyReporter.in_focused", "In Focus");
+    private static final String STR_KEYSTROKE  =                               //
+            properties.getProperty("KeyReporter.keystroke", "Key Stroke");
+
+    private static List<String> sColumnTitles  = Arrays.asList(STR_CLASS,
+                                                               STR_DUP,
+                                                               STR_KEYSTROKE,
+                                                               STR_ACTION,
+                                                               STR_FOCUS_TYPE);
+    private static KeyReporter  sInstance      = new KeyReporter();
 
     public static KeyReporter getInstance() {
         return sInstance;
@@ -268,9 +313,9 @@ public class KeyReporter {
 
     private enum FocusType {
 
-        WHEN_FOCUSED("Focused"), //
-        WHEN_IN_FOCUSED_WINDOW("In Focused"), //
-        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT("Ancestor");
+        WHEN_FOCUSED(STR_FOCUSED), //
+        WHEN_IN_FOCUSED_WINDOW(STR_IN_FOCUS), //
+        WHEN_ANCESTOR_OF_FOCUSED_COMPONENT(STR_ANCESTOR);
 
         private final String mTitle;
 
@@ -445,9 +490,7 @@ public class KeyReporter {
                 // files so any application reading it will process this properly.
                 Files.writeString(Path.of(mFile.getParent(), mFile.getName()),
                                   new String(new byte[]{
-                                                        (byte) 0xEF,
-                                                        (byte) 0xBB,
-                                                        (byte) 0xBF
+                                                        (byte) 0xEF, (byte) 0xBB, (byte) 0xBF
                                   }, StandardCharsets.UTF_8),
                                   StandardCharsets.UTF_8,
                                   StandardOpenOption.APPEND);
