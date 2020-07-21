@@ -12,4 +12,4 @@ InputMap. Produce a report sorted by key strokes marking any duplicates. Reports
 	Java 11
 </pre>
 
-<img src="doc-files/KeyReporter.jpg" width="75%">
+<img src="../src/doc-files/KeyReporter.jpg" width="75%">
