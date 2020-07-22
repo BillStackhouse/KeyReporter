@@ -10,6 +10,16 @@ InputMap. Produce a report sorted by key strokes marking any duplicates. Reports
 <b>Build Requirements</b>
 <pre>
 	Java 11
+
+	See pom.xml:
+		Main code
+			com.google.code.findbugs  jsr305 // javax.annotations
+		Testing only
+			org.junit.jupiter  junit-jupiter // JUnit 5
+
+		Selected files required for non-test source.
+		<img src="JarList.jpg" width ="20%" alt="JarList.jpg">
+
 </pre>
 
 <img src="src/com/billsdesk/github/keyreporter/doc-files/KeyReporter.jpg" width="75%">
