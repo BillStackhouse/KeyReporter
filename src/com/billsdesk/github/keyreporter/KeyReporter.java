@@ -234,6 +234,7 @@ public class KeyReporter {
      * @return this
      */
     public KeyReporter report(final File file) {
+        System.out.println(file.getAbsolutePath());
         final String string = mEntries.stream()
                                       .sorted(AbstractKey.SORTED)
                                       .map(AbstractKey::toString)
@@ -261,6 +262,7 @@ public class KeyReporter {
      *             file is a directory or any IOEException thrown during the report generation
      */
     public KeyReporter reportCsv(final File file) throws IllegalArgumentException {
+        System.out.println(file.getAbsolutePath());
         final CsvFile csv = new CsvFile(file);
         csv.addFields(sColumnTitles).writeRecord();
         mEntries.stream()
