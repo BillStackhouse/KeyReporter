@@ -18,7 +18,8 @@ InputMap. Produce a report sorted by key strokes marking any duplicates. Reports
 			org.junit.jupiter  junit-jupiter // JUnit 5
 
 		Selected files required for non-test source.
-		<img src="JarList.jpg" width ="20%" alt="JarList.jpg">
+
+		<img src="JarList.jpg" width ="50%" alt="JarList.jpg">
 
 </pre>
 
