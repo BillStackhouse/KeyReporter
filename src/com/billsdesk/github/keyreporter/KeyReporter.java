@@ -26,11 +26,14 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 /**
@@ -61,7 +64,7 @@ import javax.swing.table.TableModel;
  * email: billsdesk@gmail.com<br>
  *
  * @author Bill
- * @version $Rev: 8245 $ $Date: 2020-07-21 14:09:12 -0700 (Tue, 21 Jul 2020) $
+ * @version $Rev: 8252 $ $Date: 2020-07-25 11:20:17 -0700 (Sat, 25 Jul 2020) $
  */
 public class KeyReporter {
 
@@ -272,7 +275,36 @@ public class KeyReporter {
     }
 
     /**
-     * Create the report in a window using a JTable with columns that can be sorted.
+     * Create the report in a window of a panel - usually frame.getConTextPane()), using a JTable
+     * with columns that can be sorted. <pre>{@code
+            JFrame frame = new JFrame("title");
+            frame.setJMenuBar(new MainJMenuBar());
+            frame.setSize(new Dimension(1000, 800));
+            frame.setLocationRelativeTo(null);
+            KeyReporter.getInstance()
+                       .clear()
+                       .registerJFrame(someJFrame)
+                       .reportTable(frame.getContentPane());
+            frame.setVisible(true);
+     * }</pre>
+     *
+     * @param panel
+     *            a Container, usually usually frame.getConTextPane()), with the preferredSize
+     *            already set.
+     */
+    public void reportTable(final Container panel) {
+        panel.setLayout(new BorderLayout());
+        panel.add(new TablePanel(mEntries), BorderLayout.CENTER);
+    }
+
+    /**
+     * Create the report in a new window using a JTable with columns that can be sorted. <pre>{@code
+            KeyReporter.getInstance()
+                      .clear()
+                      .registerJFrame(someJFrame)
+                      .reportTable(frame.getContentPane());
+           frame.setVisible(true);
+        * }</pre> *
      *
      * @param frameSize
      *            size of the window, used to help size the columns.
@@ -386,7 +418,7 @@ public class KeyReporter {
                 dup = "";
                 keystroke = "";
             } else {
-                dup = KeyReporter.getInstance().isDuplicate(this) ? "*" : " ";
+                dup = KeyReporter.getInstance().isDuplicate(this) ? "✔" : " ";
                 keystroke = keyStrokeString(mKeyStroke);
             }
             return String.format("%s\t%s\t%s\t%s",
@@ -556,7 +588,21 @@ public class KeyReporter {
 
         public TableFrame(final List<AbstractKey> list, final Dimension frameSize) {
             super("Key Usage");
+            getContentPane().setLayout(new BorderLayout());
+            getContentPane().add(new TablePanel(list), BorderLayout.CENTER);
+            setSize(frameSize);
+            setLocationRelativeTo(null);
+            setVisible(true);
+        }
+    }
 
+    private static class TablePanel
+        extends
+            JPanel {
+
+        private static final long serialVersionUID = 1L;
+
+        public TablePanel(final List<AbstractKey> list) {
             final List<String> columns = new ArrayList<String>();
             final List<String[]> values = new ArrayList<String[]>();
 
@@ -573,25 +619,38 @@ public class KeyReporter {
 
             final TableModel tableModel = //
                     new DefaultTableModel(values.toArray(new Object[][]{}), columns.toArray());
-            final JTable table = new JTable(tableModel);
+            final JTable table = new JTable(tableModel) {
+
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public Component prepareRenderer(final TableCellRenderer renderer,
+                                                 final int row,
+                                                 final int column) {
+                    final Component component = super.prepareRenderer(renderer, row, column);
+                    final int rendererWidth = component.getPreferredSize().width;
+                    final TableColumn tableColumn = getColumnModel().getColumn(column);
+                    tableColumn.setPreferredWidth(Math.max(rendererWidth
+                                                           + getIntercellSpacing().width,
+                                                           tableColumn.getPreferredWidth()));
+                    return component;
+                }
+            };
+
+            final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+            table.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+
             table.setFont(new Font("Courier New", Font.PLAIN, 16));
             table.setAutoCreateRowSorter(true);
             table.setShowGrid(false);
             table.setShowVerticalLines(true);
             table.setGridColor(Color.LIGHT_GRAY);
             table.setIntercellSpacing(new Dimension(5, 0)); // pixels either side of cell
-            table.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
-            final TableColumnModel columnModel = table.getColumnModel();
-            columnModel.getColumn(0).setPreferredWidth((int) (frameSize.width * 0.20));
-            columnModel.getColumn(1).setPreferredWidth((int) (frameSize.width * 0.03));
-            columnModel.getColumn(2).setPreferredWidth((int) (frameSize.width * 0.15));
-            columnModel.getColumn(3).setPreferredWidth((int) (frameSize.width * 0.35));
-            getContentPane().setLayout(new BorderLayout());
-            getContentPane().add(table.getTableHeader(), BorderLayout.NORTH);
-            getContentPane().add(new JScrollPane(table), BorderLayout.CENTER);
-            setSize(frameSize);
-            setLocation(200, 25);
-            setVisible(true);
+
+            setLayout(new BorderLayout());
+            add(table.getTableHeader(), BorderLayout.NORTH);
+            add(table, BorderLayout.CENTER);
         }
     }
 }
